@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SmartexpensetrackerApplication {
+public class SmartExpenseTrackerApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SmartexpensetrackerApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SmartExpenseTrackerApplication.class, args);
+    }
 
 }
