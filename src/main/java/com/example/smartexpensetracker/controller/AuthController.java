@@ -1,14 +1,18 @@
 package com.example.smartexpensetracker.controller;
 
+import com.example.smartexpensetracker.model.LoginRequest;
 import com.example.smartexpensetracker.model.User;
 import com.example.smartexpensetracker.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.example.smartexpensetracker.security.JwtUtil;
 
-@Controller
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
@@ -17,26 +21,39 @@ public class AuthController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    @GetMapping("/register")
-    public String showRegisterForm(Model model) {
-        model.addAttribute("user", new User());
-        return "register";
-    }
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    // Register
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user) {
+    public String register(@RequestBody User user) {
+
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return "User already exists";
+        }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole("CLIENT");
 
         userRepository.save(user);
 
-        return "redirect:/login";
+        return "User registered successfully";
     }
 
-    @GetMapping("/login")
-    public String showLoginPage() {
-        return "login";
+    // Login
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest request) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
+        );
+
+        return jwtUtil.generateToken(request.getEmail());
     }
-    
 }

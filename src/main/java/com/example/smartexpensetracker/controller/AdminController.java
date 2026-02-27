@@ -1,35 +1,34 @@
 package com.example.smartexpensetracker.controller;
 
-import com.example.smartexpensetracker.repository.BusinessProfileRepository;
 import com.example.smartexpensetracker.repository.UserRepository;
+import com.example.smartexpensetracker.repository.ExpenseRepository;
+import com.example.smartexpensetracker.repository.BudgetRepository;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-@RequestMapping("/admin")
 public class AdminController {
 
     private final UserRepository userRepository;
-    private final BusinessProfileRepository businessRepository;
+    private final ExpenseRepository expenseRepository;
+    private final BudgetRepository budgetRepository;
 
     public AdminController(UserRepository userRepository,
-                           BusinessProfileRepository businessRepository) {
+                           ExpenseRepository expenseRepository,
+                           BudgetRepository budgetRepository) {
         this.userRepository = userRepository;
-        this.businessRepository = businessRepository;
+        this.expenseRepository = expenseRepository;
+        this.budgetRepository = budgetRepository;
     }
 
-    @GetMapping("/dashboard")
+    @GetMapping("/admin/dashboard")
     public String adminDashboard(Model model) {
 
-        // Add total counts
         model.addAttribute("totalUsers", userRepository.count());
-        model.addAttribute("totalBusinesses", businessRepository.count());
-
-        // Add full lists
-        model.addAttribute("users", userRepository.findAll());
-        model.addAttribute("businesses", businessRepository.findAll());
+        model.addAttribute("totalExpenses", expenseRepository.count());
+        model.addAttribute("totalBudgets", budgetRepository.count());
 
         return "admin-dashboard";
     }

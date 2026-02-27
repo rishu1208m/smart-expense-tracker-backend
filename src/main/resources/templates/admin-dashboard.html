@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard | Smart Expense Tracker</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
           rel="stylesheet">
@@ -9,99 +9,67 @@
 
 <body class="bg-light">
 
-<nav class="navbar navbar-dark bg-dark">
+<nav class="navbar navbar-dark bg-dark shadow-sm">
     <div class="container-fluid">
-        <span class="navbar-brand">Admin Panel</span>
-        <a href="/dashboard" class="btn btn-secondary btn-sm">User Dashboard</a>
-        <a href="/logout" class="btn btn-danger btn-sm ms-2">Logout</a>
+        <span class="navbar-brand fw-semibold">Admin Panel</span>
+        <div>
+            <a href="/dashboard" class="btn btn-secondary btn-sm">User Dashboard</a>
+            <a href="/logout" class="btn btn-danger btn-sm ms-2">Logout</a>
+        </div>
     </div>
 </nav>
 
-<div class="container mt-4">
+<div class="container mt-5">
 
-    <h2 class="mb-4">Admin Dashboard</h2>
-	<h3>Total Users: <span th:text="${totalUsers}"></span></h3>
-	<h3>Total Businesses: <span th:text="${totalBusinesses}"></span></h3>
-    <!-- Summary Cards -->
-    <div class="row mb-4">
+    <h2 class="mb-4 fw-bold">Admin Dashboard</h2>
 
-        <div class="col-md-6">
-            <div class="card text-white bg-primary shadow">
-                <div class="card-body">
+    <!-- SUMMARY CARDS -->
+    <div class="row g-4 mb-5">
+
+        <!-- Total Users -->
+        <div class="col-md-4">
+            <div class="card text-white bg-primary shadow border-0">
+                <div class="card-body text-center">
                     <h5>Total Users</h5>
-                    <h3 th:text="${#lists.size(users)}"></h3>
+                    <h2 th:text="${totalUsers}"></h2>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card text-white bg-success shadow">
-                <div class="card-body">
-                    <h5>Total Businesses</h5>
-                    <h3 th:text="${#lists.size(businesses)}"></h3>
+        <!-- Total Expenses -->
+        <div class="col-md-4">
+            <div class="card text-white bg-success shadow border-0">
+                <div class="card-body text-center">
+                    <h5>Total Expenses</h5>
+                    <h2 th:text="${totalExpenses}"></h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Budgets -->
+        <div class="col-md-4">
+            <div class="card text-white bg-warning shadow border-0">
+                <div class="card-body text-center">
+                    <h5>Total Budgets</h5>
+                    <h2 th:text="${totalBudgets}"></h2>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- Users Table -->
-    <div class="card mb-4 shadow">
+    <!-- OPTIONAL SYSTEM INFO -->
+    <div class="card shadow border-0">
         <div class="card-header bg-dark text-white">
-            All Registered Users
+            System Overview
         </div>
         <div class="card-body">
-
-            <table class="table table-bordered table-striped">
-                <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr th:each="user : ${users}">
-                    <td th:text="${user.id}"></td>
-                    <td th:text="${user.email}"></td>
-                    <td th:text="${user.role}"></td>
-                </tr>
-                </tbody>
-            </table>
-
-        </div>
-    </div>
-
-    <!-- Businesses Table -->
-    <div class="card shadow">
-        <div class="card-header bg-dark text-white">
-            All Business Profiles
-        </div>
-        <div class="card-body">
-
-            <table class="table table-bordered table-striped">
-                <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Business Name</th>
-                    <th>Category</th>
-                    <th>Location</th>
-                    <th>Owner</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr th:each="business : ${businesses}">
-                    <td th:text="${business.id}"></td>
-                    <td th:text="${business.businessName}"></td>
-                    <td th:text="${business.category}"></td>
-                    <td th:text="${business.location}"></td>
-                    <td th:text="${business.user.email}"></td>
-                </tr>
-                </tbody>
-            </table>
-
+            <p>This admin panel provides overall statistics of the Smart Expense Tracker system.</p>
+            <ul>
+                <li>Total registered users in the system</li>
+                <li>Total expenses recorded by users</li>
+                <li>Total monthly budgets configured</li>
+            </ul>
         </div>
     </div>
 

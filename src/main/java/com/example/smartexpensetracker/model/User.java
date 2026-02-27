@@ -5,6 +5,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
+import com.example.smartexpensetracker.entity.Expense;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -23,6 +27,10 @@ public class User {
     private String password;
 
     private String role; // ADMIN or CLIENT
+
+    // 🔥 One user can have many expenses
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Expense> expenses;
 
     // ================= GETTERS & SETTERS =================
 
@@ -46,6 +54,10 @@ public class User {
         return password;
     }
 
+    public List<Expense> getExpenses() {
+        return expenses;
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
@@ -56,5 +68,9 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public void setExpenses(List<Expense> expenses) {
+        this.expenses = expenses;
     }
 }
