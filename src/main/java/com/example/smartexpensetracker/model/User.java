@@ -17,6 +17,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // ── Personal Info (from signup form) ──
+    private String firstName;
+    private String lastName;
+    private String phone;
+    private String currency;
+    private Double monthlyBudget;
+
     @NotBlank(message = "Email is required")
     @Email(message = "Enter a valid email")
     @Column(unique = true)
@@ -28,49 +35,47 @@ public class User {
 
     private String role; // ADMIN or CLIENT
 
-    // 🔥 One user can have many expenses
+    // One user can have many expenses
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Expense> expenses;
 
     // ================= GETTERS & SETTERS =================
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
 
-    public String getEmail() {
-        return email;
-    }
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
 
-    public String getPassword() {
-        return password;
-    }
+    public String getCurrency() { return currency; }
+    public void setCurrency(String currency) { this.currency = currency; }
 
-    public List<Expense> getExpenses() {
-        return expenses;
-    }
+    public Double getMonthlyBudget() { return monthlyBudget; }
+    public void setMonthlyBudget(Double monthlyBudget) { this.monthlyBudget = monthlyBudget; }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public String getRole() {
-        return role;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public void setRole(String role) {
-        this.role = role;
-    }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 
-    public void setExpenses(List<Expense> expenses) {
-        this.expenses = expenses;
+    public List<Expense> getExpenses() { return expenses; }
+    public void setExpenses(List<Expense> expenses) { this.expenses = expenses; }
+
+    // ── Helper: full name for JWT response ──
+    public String getFullName() {
+        if (firstName == null && lastName == null) return email;
+        if (firstName == null) return lastName;
+        if (lastName == null) return firstName;
+        return firstName + " " + lastName;
     }
 }
