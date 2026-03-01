@@ -1,8 +1,9 @@
 package com.example.smartexpensetracker.entity;
 
+import com.example.smartexpensetracker.model.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import com.example.smartexpensetracker.model.User;
 
 @Entity
 @Table(name = "expenses")
@@ -12,70 +13,38 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    private String title;      // e.g. "Grocery shopping"
+    private Double amount;     // e.g. 450.00
+    private String category;   // e.g. "Food", "Travel", "Shopping"
+    private String note;       // optional description
+    private LocalDate date;    // when the expense happened
 
-    private Double amount;
-
-    private String category;
-
-    private LocalDate date;
-
-    // ✅ Link Expense to User
-    @ManyToOne
+    // Many expenses belong to one user
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore  // prevents infinite JSON loop
     private User user;
 
-    public Expense() {
-    }
+    // ═══ GETTERS & SETTERS ═══
 
-    public Expense(String title, Double amount, String category, LocalDate date) {
-        this.title = title;
-        this.amount = amount;
-        this.category = category;
-        this.date = date;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public Long getId() {
-        return id;
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    public String getTitle() {
-        return title;
-    }
+    public Double getAmount() { return amount != null ? amount : 0.0; }
+    public void setAmount(Double amount) { this.amount = amount; }
 
-    public Double getAmount() {
-        return amount;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public String getCategory() {
-        return category;
-    }
+    public String getNote() { return note; }
+    public void setNote(String note) { this.note = note; }
 
-    public LocalDate getDate() {
-        return date;
-    }
+    public LocalDate getDate() { return date; }
+    public void setDate(LocalDate date) { this.date = date; }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }

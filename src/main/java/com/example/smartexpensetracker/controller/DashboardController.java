@@ -1,66 +1,88 @@
 package com.example.smartexpensetracker.controller;
 
-import com.example.smartexpensetracker.entity.Budget;
 import com.example.smartexpensetracker.model.User;
 import com.example.smartexpensetracker.repository.UserRepository;
-import com.example.smartexpensetracker.repository.BudgetRepository;
-import com.example.smartexpensetracker.repository.ExpenseRepository;
+import com.example.smartexpensetracker.service.ExpenseService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.*;
 
-@Controller
+@RestController
+@RequestMapping("/api/dashboard")
+@CrossOrigin(origins = "*")
 public class DashboardController {
 
-    private final UserRepository userRepository;
-    private final BudgetRepository budgetRepository;
-    private final ExpenseRepository expenseRepository;
+    @Autowired private ExpenseService expenseService;
+    @Autowired private UserRepository userRepository;
 
-    public DashboardController(UserRepository userRepository,
-                               BudgetRepository budgetRepository,
-                               ExpenseRepository expenseRepository) {
+    @GetMapping
+    public ResponseEntity<?> getDashboard(Authentication authentication) {
 
-        this.userRepository = userRepository;
-        this.budgetRepository = budgetRepository;
-        this.expenseRepository = expenseRepository;
-    }
+        try {
+            // Get email directly from Spring Security — no JwtUtil needed!
+            String email = authentication.getName();
 
-    @GetMapping("/dashboard")
-    public String dashboard(Authentication authentication, Model model) {
+            User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email).orElse(null);
+            LocalDate now        = LocalDate.now();
+            int currentMonth     = now.getMonthValue();
+            int currentYear      = now.getYear();
 
-        if (user == null) {
-            return "redirect:/login";
+            // Total spent this month
+            double totalSpent    = expenseService.getMonthlyTotal(email, currentYear, currentMonth);
+            double monthlyBudget = user.getMonthlyBudget() != null ? user.getMonthlyBudget() : 0;
+            double budgetLeft    = monthlyBudget - totalSpent;
+            double savings       = Math.max(budgetLeft, 0);
+
+            // Expense count this month
+            long expenseCount = expenseService.getExpensesByUser(email).stream()
+                .filter(e -> e.getDate() != null
+                    && e.getDate().getMonthValue() == currentMonth
+                    && e.getDate().getYear() == currentYear)
+                .count();
+
+            // Last 8 months trend for chart
+            List<Map<String, Object>> monthlySpend = new ArrayList<>();
+            for (int i = 7; i >= 0; i--) {
+                LocalDate d     = now.minusMonths(i);
+                double total    = expenseService.getMonthlyTotal(email, d.getYear(), d.getMonthValue());
+                Map<String, Object> pt = new HashMap<>();
+                pt.put("month", Month.of(d.getMonthValue())
+                    .getDisplayName(TextStyle.SHORT, Locale.ENGLISH));
+                pt.put("spent", total);
+                monthlySpend.add(pt);
+            }
+
+            // Currency symbol — e.g. "₹" from "₹ INR"
+            String currency = user.getCurrency() != null
+                ? user.getCurrency().split(" ")[0] : "₹";
+
+            // Build response
+            Map<String, Object> res = new HashMap<>();
+            res.put("totalSpent",    currency + String.format("%.0f", totalSpent));
+            res.put("budgetLeft",    currency + String.format("%.0f", Math.max(budgetLeft, 0)));
+            res.put("savings",       currency + String.format("%.0f", savings));
+            res.put("expenseCount",  expenseCount);
+            res.put("spentChange",   "this month");
+            res.put("budgetChange",  "remaining");
+            res.put("savingsChange", "saved");
+            res.put("monthlySpend",  monthlySpend);
+            res.put("currency",      currency);
+            res.put("monthlyBudget", monthlyBudget);
+
+            return ResponseEntity.ok(res);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500)
+                .body(Map.of("message", "Error: " + e.getMessage()));
         }
-
-        LocalDate now = LocalDate.now();
-
-        Budget budget = budgetRepository
-                .findByUserIdAndYearAndMonth(user.getId(), now.getYear(), now.getMonthValue())
-                .orElse(null);
-
-        Double totalExpense = expenseRepository
-                .getTotalExpenseForMonth(user.getId(), now.getYear(), now.getMonthValue());
-
-        if (totalExpense == null) totalExpense = 0.0;
-
-        model.addAttribute("dashboardBudget", budget);
-        model.addAttribute("dashboardTotalExpense", totalExpense);
-
-        if (budget != null) {
-            double remaining = budget.getAmount() - totalExpense;
-            double percentUsed = (totalExpense / budget.getAmount()) * 100;
-
-            model.addAttribute("dashboardRemaining", remaining);
-            model.addAttribute("dashboardPercentUsed", percentUsed);
-        }
-
-        return "dashboard";
     }
 }
