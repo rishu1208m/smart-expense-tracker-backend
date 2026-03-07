@@ -38,7 +38,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -60,14 +59,14 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of(
-            "http://localhost:5173",   // Vite React dev server
-            "http://localhost:3000",   // CRA fallback
-            "https://smart-expense-tracker-frontend-dun.vercel.app",  // ✅ Vercel production
-            "https://*.vercel.app"     // ✅ All Vercel preview deployments
+        // ✅ allowedOriginPatterns supports wildcards AND allowCredentials=true
+        config.setAllowedOriginPatterns(List.of(
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "https://smart-expense-tracker-frontend-dun.vercel.app",
+            "https://*.vercel.app"
         ));
 
         config.setAllowedMethods(List.of(
@@ -79,8 +78,6 @@ public class SecurityConfig {
         config.setExposedHeaders(List.of("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-        // ✅ FIXED: was registerCorsMapping → correct method is registerCorsConfiguration
         source.registerCorsConfiguration("/**", config);
 
         return source;
