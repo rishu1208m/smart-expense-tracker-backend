@@ -26,7 +26,6 @@ public class CorsFilter extends OncePerRequestFilter {
         response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, Origin, X-Requested-With");
         response.setHeader("Access-Control-Max-Age", "3600");
 
-        // For OPTIONS preflight requests — respond immediately with 200
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
             return;
