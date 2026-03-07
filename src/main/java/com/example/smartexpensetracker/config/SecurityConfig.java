@@ -65,7 +65,9 @@ public class SecurityConfig {
 
         config.setAllowedOrigins(List.of(
             "http://localhost:5173",   // Vite React dev server
-            "http://localhost:3000"    // CRA fallback
+            "http://localhost:3000",   // CRA fallback
+            "https://smart-expense-tracker-frontend-dun.vercel.app",  // ✅ Vercel production
+            "https://*.vercel.app"     // ✅ All Vercel preview deployments
         ));
 
         config.setAllowedMethods(List.of(
