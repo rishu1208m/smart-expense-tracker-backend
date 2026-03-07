@@ -61,21 +61,26 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // ✅ allowedOriginPatterns supports wildcards AND allowCredentials=true
-        config.setAllowedOriginPatterns(List.of(
-            "http://localhost:5173",
-            "http://localhost:3000",
-            "https://smart-expense-tracker-frontend-dun.vercel.app",
-            "https://*.vercel.app"
-        ));
+        // Allow ALL origins - JWT is in header so we don't need credentials=true
+        config.setAllowedOrigins(List.of("*"));
 
         config.setAllowedMethods(List.of(
             "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
         ));
 
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
+        config.setAllowedHeaders(List.of(
+            "Authorization",
+            "Content-Type",
+            "Accept",
+            "Origin",
+            "X-Requested-With"
+        ));
+
+        // ✅ Must be FALSE when allowedOrigins is "*"
+        config.setAllowCredentials(false);
+
         config.setExposedHeaders(List.of("Authorization"));
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
