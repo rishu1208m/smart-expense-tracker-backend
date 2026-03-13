@@ -15,7 +15,13 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/analytics")
-@CrossOrigin(origins = "*")
+//✅ CORRECT
+@CrossOrigin(origins = {
+ "http://localhost:5173",
+ "https://smart-expense-tracker-frontend-dun.vercel.app",
+ "https://smart-expense-tracker-frontend-git-main-rishu1208ms-projects.vercel.app",
+ "https://smart-expense-tracker-frontend-ham9rcveu-rishu1208ms-projects.vercel.app"
+})
 public class AnalyticsController {
 
     private final ExpenseRepository expenseRepository;
