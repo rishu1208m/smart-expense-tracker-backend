@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "https://smart-expense-tracker-backend-production-a4a5.up.railway.app/api")
 public class AuthController {
 
     @Autowired
