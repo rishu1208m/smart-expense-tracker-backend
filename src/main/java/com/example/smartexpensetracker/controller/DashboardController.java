@@ -16,7 +16,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/dashboard")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://smart-expense-tracker-frontend-dun.vercel.app")
 public class DashboardController {
 
     @Autowired private ExpenseService expenseService;
