@@ -75,9 +75,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-            "http://localhost:5173",
-            "https://smart-expense-tracker-frontend-dun.vercel.app"
-        ));
+        	    "http://localhost:5173",
+        	    "https://smart-expense-tracker-frontend-dun.vercel.app",
+        	    "https://smart-expense-tracker-frontend-git-main-rishu1208ms-projects.vercel.app",
+        	    "https://smart-expense-tracker-frontend-ham9rcveu-rishu1208ms-projects.vercel.app"
+        	));
         config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS","PATCH"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
